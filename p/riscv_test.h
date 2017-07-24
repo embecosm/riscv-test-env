@@ -106,6 +106,11 @@
 #define INTERRUPT_HANDLER j other_exception /* No interrupts should occur */
 
 #define RVTEST_CODE_BEGIN                                               \
+        .text;                                                          \
+        .global exit;                                                   \
+exit:   j exit;                                                         \
+        .global abort;                                                  \
+abort:  j abort;                                                        \
         .section .text.init;                                            \
         .align  6;                                                      \
         .weak stvec_handler;                                            \
@@ -195,6 +200,12 @@ reset_vector:                                                           \
         sll TESTNUM, TESTNUM, 1;                                        \
         or TESTNUM, TESTNUM, 1;                                         \
         ecall
+
+#undef RVTEST_PASS
+#define RVTEST_PASS li a0,0; call exit
+
+#undef RVTEST_FAIL
+#define RVTEST_FAIL call abort
 
 //-----------------------------------------------------------------------
 // Data Section Macro

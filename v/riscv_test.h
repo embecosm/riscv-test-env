@@ -15,6 +15,10 @@
 #undef RVTEST_CODE_BEGIN
 #define RVTEST_CODE_BEGIN                                               \
         .text;                                                          \
+        .global exit;                                                   \
+exit:   j exit;                                                         \
+        .global abort;                                                  \
+abort:  j abort;                                                        \
         .global userstart;                                              \
 userstart:                                                              \
         init
@@ -28,6 +32,12 @@ userstart:                                                              \
 
 #undef RVTEST_FAIL
 #define RVTEST_FAIL sll a0, TESTNUM, 1; 1:beqz a0, 1b; or a0, a0, 1; scall;
+
+#undef RVTEST_PASS
+#define RVTEST_PASS li a0,0; call exit
+
+#undef RVTEST_FAIL
+#define RVTEST_FAIL call abort
 
 //-----------------------------------------------------------------------
 // Data Section Macro
